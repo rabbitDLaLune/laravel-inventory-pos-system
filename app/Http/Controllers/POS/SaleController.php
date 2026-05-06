@@ -10,6 +10,21 @@ use Illuminate\Http\Request;
 
 class SaleController extends Controller
 {
+    /**
+     * Show sales history page.
+     */
+    public function index()
+    {
+        $sales = Sale::with(['user', 'warehouse', 'payments'])
+            ->latest()
+            ->paginate(10);
+
+        return view('sales.index', compact('sales'));
+    }
+
+    /**
+     * Show checkout page.
+     */
     public function checkout(CartService $cartService)
     {
         if ($cartService->count() <= 0) {
@@ -25,6 +40,9 @@ class SaleController extends Controller
         ]);
     }
 
+    /**
+     * Process checkout and save sale.
+     */
     public function processCheckout(Request $request, CartService $cartService, SaleService $saleService)
     {
         if ($cartService->count() <= 0) {
@@ -62,6 +80,24 @@ class SaleController extends Controller
         }
     }
 
+    /**
+     * Show sale details page.
+     */
+    public function show(Sale $sale)
+    {
+        $sale->load([
+            'items.product',
+            'payments',
+            'user',
+            'warehouse',
+        ]);
+
+        return view('sales.show', compact('sale'));
+    }
+
+    /**
+     * Show receipt page.
+     */
     public function receipt(Sale $sale)
     {
         $sale->load(['items', 'payments', 'user', 'warehouse']);

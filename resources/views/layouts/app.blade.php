@@ -12,23 +12,78 @@
         <aside class="w-64 bg-slate-900 text-white p-5 hidden md:block">
             <h1 class="text-xl font-bold mb-8">Inventory POS</h1>
 
-            <nav class="space-y-2">
-                <a href="{{ route('dashboard') }}" class="block px-4 py-2 rounded hover:bg-slate-700">
-                    Dashboard
-                </a>
+            @if (auth()->check())
+                <div class="mb-6 rounded-lg bg-slate-800 p-3 text-sm">
+                    <p class="font-semibold">{{ auth()->user()->name }}</p>
+                    <p class="text-slate-300 capitalize">{{ auth()->user()->role }}</p>
+                </div>
+            @endif
 
+            <nav class="space-y-2">
+                {{-- Admin and manager only --}}
+                @if (in_array(auth()->user()?->role, ['admin', 'manager']))
+                    <a href="{{ route('dashboard') }}" class="block px-4 py-2 rounded hover:bg-slate-700">
+                        Dashboard
+                    </a>
+                @endif
+
+                {{-- All roles --}}
                 <a href="{{ route('pos.index') }}" class="block px-4 py-2 rounded hover:bg-slate-700">
                     POS
                 </a>
 
-                <a href="{{ route('products.index') }}" class="block px-4 py-2 rounded hover:bg-slate-700">
-                    Products
+                {{-- All roles --}}
+                <a href="{{ route('sales.index') }}" class="block px-4 py-2 rounded hover:bg-slate-700">
+                    Sales
                 </a>
 
-                <a href="{{ route('categories.index') }}" class="block px-4 py-2 rounded hover:bg-slate-700">
-                    Categories
-                </a>
+                {{-- Admin and manager only --}}
+                @if (in_array(auth()->user()?->role, ['admin', 'manager']))
+                    <a href="{{ route('products.index') }}" class="block px-4 py-2 rounded hover:bg-slate-700">
+                        Products
+                    </a>
+
+                    <a href="{{ route('categories.index') }}" class="block px-4 py-2 rounded hover:bg-slate-700">
+                        Categories
+                    </a>
+
+                    <a href="{{ route('suppliers.index') }}" class="block px-4 py-2 rounded hover:bg-slate-700">
+                        Suppliers
+                    </a>
+
+                    <a href="{{ route('purchase-orders.index') }}" class="block px-4 py-2 rounded hover:bg-slate-700">
+                        Purchase Orders
+                    </a>
+
+                    <a href="{{ route('warehouses.index') }}" class="block px-4 py-2 rounded hover:bg-slate-700">
+                        Warehouses
+                    </a>
+
+                    <a href="{{ route('stock-movements.index') }}" class="block px-4 py-2 rounded hover:bg-slate-700">
+                        Stock Movements
+                    </a>
+
+                    @if (auth()->user()?->role === 'admin')
+                        <a href="{{ route('users.index') }}" class="block px-4 py-2 rounded hover:bg-slate-700">
+                            Users
+                        </a>
+                    @endif
+
+                    <a href="{{ route('reports.index') }}" class="block px-4 py-2 rounded hover:bg-slate-700">
+                        Reports
+                    </a>
+                @endif
             </nav>
+
+            @if (auth()->check())
+                <form action="{{ route('logout') }}" method="POST" class="mt-6">
+                    @csrf
+
+                    <button class="w-full bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700" type="submit">
+                        Logout
+                    </button>
+                </form>
+            @endif
         </aside>
 
         <main class="flex-1 p-6">
